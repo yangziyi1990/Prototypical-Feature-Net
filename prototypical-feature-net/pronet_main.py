@@ -1,4 +1,5 @@
 import numpy as np
+import math
 import torch
 import itertools
 import torch.nn as nn
@@ -86,11 +87,38 @@ if label_balance == True:
     # print(data_episode[0]['xs'][0])
     # print(data_episode[0]['xs_class'][0])
 
-    i = 1
-    for key in data_episode:
-        if i == 1:
-            print(data_episode[key])
-            i = i+1
+    # i = 1
+    # for key in data_episode:
+    #     if i == 1:
+    #         print(data_episode[key])
+    #         i = i+1
+
+class Pronet(nn.Module):
+    def __init__(self, encoder, feature_dim):
+        super(Pronet, self).__init__()
+        self.encoder = encoder
+        self.feature_dim = feature_dim
+        self.weight = nn.Parameter(torch.Tensor(self.feature_dim))
+        self.weight.data.uniform_(0, 1)
+    #     self.reset_parameters()
+    #
+    # def reset_parameters(self):
+    #     stdv = 1./ math.sqrt(self.weight.size(0))
+    #     self.weight.data.uniform_(-stdv, stdv)
+
+    def loss(self, sample):
+
+
+    def forward(self, x):  # x or sample?
+        # out = nn.functional.linear(x, self.weight)  # x is input data (N*P)
+
+
+        feature_weight = nn.functional.softmax(self.weight, dim=0)
+        x = x * feature_weight
+
+
+
+
 
 
 
