@@ -1,18 +1,21 @@
-import numpy as np
 import math
 import torch
-import itertools
 import torch.nn as nn
+import torch.nn.functional as F
 from torch.autograd import Variable
-from torch.utils.data import TensorDataset, DataLoader, SequentialSampler, BatchSampler
+import numpy as np
+import itertools
 from itertools import chain
+# from torch.utils.data import TensorDataset, DataLoader, SequentialSampler, BatchSampler
+
+from data_pre import *
+from utils import euclidean_dist
+from few_shot import *
 
 
-from pronet_function import *
 ##-----------------------------------
 ## Setting initialization parameters
 ##-----------------------------------
-
 # use_gpu = True
 # if torch.cuda.is_available() and use_gpu:
 #   device = torch.device('cuda')
@@ -84,41 +87,50 @@ if label_balance == True:
 
     sampler = ZiyiSampler1(sample_idx, batch_size=batch_size, clu_size=num_c_sample)
     data_episode = ZiyiDataLoader2(x_train, y_train, sampler, n_support, n_query)   # type: dictionary
-    # print(data_episode[0]['xs'][0])
-    # print(data_episode[0]['xs_class'][0])
 
+    ## Test part start_______________________________________
     # i = 1
     # for key in data_episode:
     #     if i == 1:
-    #         print(data_episode[key])
-    #         i = i+1
-
-class Pronet(nn.Module):
-    def __init__(self, encoder, feature_dim):
-        super(Pronet, self).__init__()
-        self.encoder = encoder
-        self.feature_dim = feature_dim
-        self.weight = nn.Parameter(torch.Tensor(self.feature_dim))
-        self.weight.data.uniform_(0, 1)
-    #     self.reset_parameters()
+    #         print(type(data_episode[key]['xs']))
+    #         print(type(data_episode[key]['xs_class']))
+    #         print(data_episode[key]['xs'])
+    #         print(data_episode[key]['xs_class'])
+    #         print(data_episode[key]['xs_class'].max().item()+1)
+    #         print(data_episode[key]['xs'].size(0))
+    #         n_class = data_episode[key]['xs_class'].max().item() + 1
+    #         n_support = int(data_episode[key]['xs'].size(0)/n_class)
+    #         n_query = int(data_episode[key]['xq'].size(0)/n_class)
+    #         print(n_class)
+    #         print(n_support)
+    #         print(n_query)
+    #         xs = data_episode[key]['xs']
+    #         xq = data_episode[key]['xq']
+    #         target_inds = torch.arange(0, n_class).view(n_class, 1, 1).expand(n_class, n_query, 1).long()
+    #         target_inds = Variable(target_inds, requires_grad=False)
     #
-    # def reset_parameters(self):
-    #     stdv = 1./ math.sqrt(self.weight.size(0))
-    #     self.weight.data.uniform_(-stdv, stdv)
+    #         x = torch.cat([xs, xq], 0)
+    #         z = x
+    #         z_dim = z.size(-1)
+    #         z_proto = z[:n_class*n_support].view(n_class, n_support, z_dim).mean(1)
+    #
+    #         zq = z[n_class*n_support:]
+    #         dists = euclidean_dist(zq, z_proto)
+    #
+    #         log_p_y = F.log_softmax(-dists, dim=1).view(n_class, n_query, -1)
+    #         loss_val = -log_p_y.gather(2, target_inds).squeeze().view(-1).mean()
+    #
+    #         print(loss_val)
+    #         _, y_hat = log_p_y.max(2)
+    #         acc_val = torch.eq(y_hat, target_inds.squeeze()).float().mean()
+    #         print(acc_val.item())
+    #
+    #         i = i+1
+    ## Test part end_______________________________________________
 
-    def loss(self, sample):
-
-
-    def forward(self, x):  # x or sample?
-        # out = nn.functional.linear(x, self.weight)  # x is input data (N*P)
-
-
-        feature_weight = nn.functional.softmax(self.weight, dim=0)
-        x = x * feature_weight
-
-
-
-
+state = {'feature_dim': 42}  # How to input parameters?
+model = load_Protonet()
+print(model)
 
 
 
@@ -132,8 +144,17 @@ class Pronet(nn.Module):
 #     sampler = ZiyiSampler1(sample_idx, batch_size=5, clu_size=num_c_sample)
 #     data_episode = ZiyiDataLoader1(x_train, y_train, sampler)   # type: dictionary
 #
-#     print(data_episode[0]['xs'][0])
-#     print(data_episode[0]['class'][0])
+#     # print(data_episode[0]['xs'][0])
+#     # print(data_episode[0]['class'][0])
+#
+#     i = 1
+#     for key in data_episode:
+#         if i == 1:
+#             print(data_episode[key]['xs'])
+#             print(type(data_episode[key]['xs']))
+#             print(data_episode[key]['class'])
+#             print(type(data_episode[key]['class']))
+#             i = i+1
 
 
 

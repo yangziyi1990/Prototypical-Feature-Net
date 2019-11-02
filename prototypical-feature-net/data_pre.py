@@ -132,10 +132,15 @@ def ZiyiDataLoader2(x, y, sampler, n_support, n_query):
         label_xq = []
 
         for j in range(0, len(y[sampler[i]]), n_support + n_query):
-            data_xs.extend(x[sampler[i][j: j + n_support], ])
-            data_xq.extend(x[sampler[i][j + n_support: j + n_support + n_query], ])
+            data_xs.extend(x[sampler[i][j: j + n_support], ].numpy())
+            data_xq.extend(x[sampler[i][j + n_support: j + n_support + n_query], ].numpy())
             label_xs.extend(y[sampler[i]][j: j + n_support])
             label_xq.extend(y[sampler[i]][j + n_support: j + n_support + n_query])
+
+        data_xs = torch.FloatTensor(data_xs)
+        data_xq = torch.FloatTensor(data_xq)
+        label_xs = torch.LongTensor(label_xs)
+        label_xq = torch.LongTensor(label_xq)
 
         data_episode[i] = {'xs': data_xs, 'xs_class': label_xs,
                            'xq': data_xq, 'xq_class': label_xq}
