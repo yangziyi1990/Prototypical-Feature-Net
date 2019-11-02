@@ -65,15 +65,17 @@ class feature_attetion_layer(nn.Module):
         return out
 
 @register_model('protonet_conv')
-def load_Protonet():     # object or nn.Module??
+def load_Protonet(**kwargs):     # object or nn.Module??
                                  # Do we need add a Neural network layer after feature attention layer?
-    feature_dim = 42
+    feature_dim = kwargs['feature_dim']
 
     def feature_lay(in_dim):
         return nn.Sequential(
             feature_attetion_layer(in_dim)
         )
 
-    encoder = nn.Sequential(feature_lay(feature_dim))
+    encoder = nn.Sequential(
+        feature_lay(feature_dim)
+    )
 
     return Protonet(encoder)

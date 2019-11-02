@@ -128,8 +128,8 @@ if label_balance == True:
     #         i = i+1
     ## Test part end_______________________________________________
 
-state = {'feature_dim': 42}  # How to input parameters?
-model = load_Protonet()
+
+model = load_Protonet(feature_dim=42)
 print(model)
 
 
