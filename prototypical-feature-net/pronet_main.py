@@ -128,8 +128,8 @@ if label_balance == True:
     #         i = i+1
     ## Test part end_______________________________________________
 
-
-model = load_Protonet(feature_dim=42)
+kwargs_dict = {'feature_dim': 42}
+model = load_Protonet(**kwargs_dict)
 print(model)
 
 
