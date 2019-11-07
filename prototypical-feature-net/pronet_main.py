@@ -147,7 +147,7 @@ for epoch in range(10):
 
         step +=1
         print('Epoch:', epoch, '| Steps:', step, '| Loss:', output['loss'], '| Accuracy:', output['acc'])
-        print('| Feature_weight:', output['fw'])
+        print('Feature_weight:', output['fw'])
 
 
 
