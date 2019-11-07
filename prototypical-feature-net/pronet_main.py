@@ -132,7 +132,8 @@ kwargs_dict = {'feature_dim': in_dim}
 model = load_Protonet(**kwargs_dict)
 optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
 
-print(optimizer)
+print(model)
+# print(optimizer)
 
 for epoch in range(10):
     step = 0
@@ -146,6 +147,7 @@ for epoch in range(10):
 
         step +=1
         print('Epoch:', epoch, '| Steps:', step, '| Loss:', output['loss'], '| Accuracy:', output['acc'])
+        print('| Feature_weight:', output['fw'])
 
 
 

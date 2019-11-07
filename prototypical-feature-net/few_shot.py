@@ -24,7 +24,8 @@ class Protonet(nn.Module):
         target_inds = Variable(target_inds, requires_grad=False)
 
         x = torch.cat([xs, xq], 0)
-        z = self.encoder.forward(x)                                              # sample is calculated by feature attention layer
+        # z = self.encoder.forward(x)
+        z, feature_wight = self.encoder.forward(x)                                              # sample is calculated by feature attention layer
 
         z_dim = z.size(-1)
         z_proto = z[:n_class*n_support].view(n_class, n_support, z_dim).mean(1)  # Calculate the prototype for support set
@@ -40,7 +41,8 @@ class Protonet(nn.Module):
 
         return loss_val, {
             'loss': loss_val.item(),
-            'acc': acc_val.item()
+            'acc': acc_val.item(),
+            'fw': feature_wight
         }
 
 
@@ -61,7 +63,8 @@ class feature_attention_layer(nn.Module):
         feature_weight = nn.functional.softmax(self.weight, dim=0)
         out = x * feature_weight
 
-        return out
+        return out, feature_weight
+        # return out
 
 @register_model('protonet_conv')
 def load_Protonet(**kwargs):     # object or nn.Module??
