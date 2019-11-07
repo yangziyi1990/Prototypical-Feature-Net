@@ -44,11 +44,10 @@ class Protonet(nn.Module):
         }
 
 
-class feature_attetion_layer(nn.Module):
+class feature_attention_layer(nn.Module):
 
     def __init__(self, feature_dim):
-        super(feature_attetion_layer, self).__init__()
-
+        super(feature_attention_layer, self).__init__()
         self.feature_dim = feature_dim
         self.weight = nn.Parameter(torch.Tensor(self.feature_dim))
         self.weight.data.uniform_(0, 1)
@@ -71,7 +70,7 @@ def load_Protonet(**kwargs):     # object or nn.Module??
 
     def feature_lay(in_dim):
         return nn.Sequential(
-            feature_attetion_layer(in_dim)
+            feature_attention_layer(in_dim)
         )
 
     encoder = nn.Sequential(
