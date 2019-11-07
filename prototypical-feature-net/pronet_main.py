@@ -11,6 +11,7 @@ from itertools import chain
 from data_pre import *
 from utils import euclidean_dist
 from few_shot import *
+from plot_fig import *
 
 
 ##-----------------------------------
@@ -24,7 +25,7 @@ from few_shot import *
 
 seed = 0
 signal_dim = 1
-noisy_dim = 20
+noisy_dim = 500
 clu_size = 100          # number of sample for each class
 num_clusters = 4        # number of class
 hidden_dims = [100]     # a hidden layer with 100 hidden units
@@ -32,8 +33,9 @@ num_iter = 100          # number of iteration
 batch_size = 100        # batch? where use it?
 lr = 1e-1
 weight_decay = 1e-4
-train_portions = 0.7   # the proportion of training samples
+train_portions = 0.5   # the proportion of training samples
 proportions = [train_portions] * num_clusters
+figsize = 10
 
 ##-----------------------------------
 ## Step1: Generating simulation data
@@ -132,9 +134,13 @@ kwargs_dict = {'feature_dim': in_dim}
 model = load_Protonet(**kwargs_dict)
 optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
 
-print(model)
+# print(model)
 # print(optimizer)
 
+Epoch = 10
+feature_iter = {}
+
+iter = 0
 for epoch in range(10):
     step = 0
     for key in data_episode:
@@ -145,9 +151,21 @@ for epoch in range(10):
         loss.backward()
         optimizer.step()
 
-        step +=1
+        addtwodimdict(feature_iter, iter, key, output['fw'])         # feature_iter[epoch_num][step_num]
         print('Epoch:', epoch, '| Steps:', step, '| Loss:', output['loss'], '| Accuracy:', output['acc'])
-        print('Feature_weight:', output['fw'])
+        # print('Feature_weight:', output['fw'])
+
+        step += 1
+    iter += 1
+
+
+feature_last_num = len(feature_iter)-1
+title = 'Feature weights after training the model'
+plot_feature_weight_linear(feature = feature_iter[feature_last_num],
+                           title = title,
+                           signal_dim=signal_dim,
+                           noisy_dim=noisy_dim,
+                           figsize = figsize)
 
 
 

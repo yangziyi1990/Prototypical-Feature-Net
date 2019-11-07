@@ -25,7 +25,7 @@ class Protonet(nn.Module):
 
         x = torch.cat([xs, xq], 0)
         # z = self.encoder.forward(x)
-        z, feature_wight = self.encoder.forward(x)                                              # sample is calculated by feature attention layer
+        z, feature_wight = self.encoder.forward(x)                               # sample is calculated by feature attention layer
 
         z_dim = z.size(-1)
         z_proto = z[:n_class*n_support].view(n_class, n_support, z_dim).mean(1)  # Calculate the prototype for support set
