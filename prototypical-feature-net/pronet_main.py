@@ -128,7 +128,7 @@ if label_balance == True:
     #         i = i+1
     ## Test part end_______________________________________________
 
-kwargs_dict = {'feature_dim': 42}
+kwargs_dict = {'feature_dim': in_dim}
 model = load_Protonet(**kwargs_dict)
 optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
 
