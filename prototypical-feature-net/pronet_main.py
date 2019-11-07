@@ -25,7 +25,7 @@ from plot_fig import *
 
 seed = 0
 signal_dim = 1
-noisy_dim = 500
+noisy_dim = 40
 clu_size = 100          # number of sample for each class
 num_clusters = 4        # number of class
 hidden_dims = [100]     # a hidden layer with 100 hidden units
