@@ -130,11 +130,9 @@ if label_balance == True:
 
 kwargs_dict = {'feature_dim': 42}
 model = load_Protonet(**kwargs_dict)
-
-weight_decay = 1e-4
 optimizer = torch.optim.Adam(model.parameters(), lr=lr, weight_decay=weight_decay)
+
 print(optimizer)
-output = {}
 
 for epoch in range(10):
     step = 0
