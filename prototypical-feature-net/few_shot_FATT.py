@@ -16,6 +16,7 @@ class Protonet(nn.Module):
         xs = Variable(sample['xs'])
         xq = Variable(sample['xq'])
 
+        # n_class = len(list(set(sample['xs_class'].data.numpy().tolist())))
         n_class = sample['xs_class'].max().item() + 1
         n_support = int(sample['xs'].size(0)/n_class)
         n_query = int(sample['xq'].size(0)/n_class)
@@ -24,9 +25,8 @@ class Protonet(nn.Module):
         target_inds = Variable(target_inds, requires_grad=False)
 
         x = torch.cat([xs, xq], 0)
-
-        ## Random feature attention ##
-        z, feature_weight = self.encoder.forward(x)                              # sample is calculated by feature attention layer
+        # z = self.encoder.forward(x)
+        z, feature_weight = self.encoder.forward(x)                               # sample is calculated by feature attention layer
 
         z_dim = z.size(-1)
         z_proto = z[:n_class*n_support].view(n_class, n_support, z_dim).mean(1)  # Calculate the prototype for support set
@@ -54,16 +54,22 @@ class feature_attention_layer(nn.Module):
         self.feature_dim = feature_dim
         self.weight = nn.Parameter(torch.Tensor(self.feature_dim))
         self.weight.data.uniform_(0, 1)
+        #     self.reset_parameters()
+        #
+        # def reset_parameters(self):
+        #     stdv = 1./ math.sqrt(self.weight.size(0))
+        #     self.weight.data.uniform_(-stdv, stdv)
 
     def forward(self, x):
-        feature_weight = self.weight
+        feature_weight = nn.functional.softmax(self.weight, dim=0)
         out = x * feature_weight
 
         return out, feature_weight
+        # return out
 
 @register_model('protonet_conv')
-def load_Protonet(**kwargs):
-
+def load_Protonet_FATT(**kwargs):     # object or nn.Module??
+                                 # Do we need add a Neural network layer after feature attention layer?
     feature_dim = kwargs['feature_dim']
 
     def feature_lay(in_dim):

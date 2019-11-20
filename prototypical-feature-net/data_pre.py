@@ -146,3 +146,71 @@ def ZiyiDataLoader2(x, y, sampler, n_support, n_query):
                            'xq': data_xq, 'xq_class': label_xq}
 
     return data_episode
+
+
+
+
+
+## meta-training has more classes to split ##
+def ZiyiSampler2(seq_dict, batch_size, clu_size, num_clusters, n_way):
+## the type of seq_dict is dictionary
+    sampler_dict = {}
+    clu_list = list(range(len(seq_dict)))
+    group_num = []
+    clu_list_new = []
+
+    if(len(clu_list) % n_way != 0):
+        group_num = len(clu_list)//n_way + 1
+        add_num = len(clu_list) - n_way * (group_num - 1)
+        clu_list.extend(np.random.choice(clu_list, add_num, replace=False))
+        clu_list_new = np.random.choice(clu_list, n_way * group_num, replace=False).tolist()  ## have problem, need to modify
+    else:
+        group_num = len(clu_list)//n_way
+        clu_list_new = clu_list
+
+
+    idx = 0
+    for i in range(group_num):
+        clu_seq = clu_list_new[i * n_way:(i + 1) * n_way]
+        for j in range((clu_size - 1) // batch_size + 1):
+            sampler_list = []
+            for k in clu_seq:
+                sampler_list.extend(seq_dict[k][j * batch_size:j * batch_size + batch_size])
+            sampler_dict[idx] = sampler_list
+            idx += 1
+
+    sampler = []
+    for key in sampler_dict:
+        sampler.append(sampler_dict[key])
+
+    return sampler
+
+def ZiyiDataLoader3(x, y, sampler, n_support, n_query):
+
+    data_episode = {}
+
+    for i in range(len(sampler)):
+        data_xs = []
+        data_xq = []
+        label_xs = []
+        label_xq = []
+
+        y_initial = list(range(len(y[sampler[i]])//(n_support+n_query)))
+        for j in range(0, len(y[sampler[i]]), n_support + n_query):
+            data_xs.extend(x[sampler[i][j: j + n_support], ].numpy())
+            data_xq.extend(x[sampler[i][j + n_support: j + n_support + n_query], ].numpy())
+            label_xs.extend(y[sampler[i]][j: j + n_support])
+            label_xq.extend(y[sampler[i]][j + n_support: j + n_support + n_query])
+
+        y_xs = [val for val in y_initial for i in range(n_support)]
+        y_xq = [val for val in y_initial for i in range(n_query)]
+
+        data_xs = torch.FloatTensor(data_xs)
+        data_xq = torch.FloatTensor(data_xq)
+        label_xs = torch.LongTensor(y_xs)
+        label_xq = torch.LongTensor(y_xq)
+
+        data_episode[i] = {'xs': data_xs, 'xs_class': label_xs,
+                           'xq': data_xq, 'xq_class': label_xq}
+
+    return data_episode
